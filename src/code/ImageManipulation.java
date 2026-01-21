@@ -181,30 +181,41 @@ public class ImageManipulation {
     public static APImage bubbleSort(String pathToFile){
         APImage image = new APImage(pathToFile);
         APImage clone = image.clone();
-        boolean swapped;
         for (int y = 0; y < image.getHeight();y++){
-            swapped = false;
-            for (int x = 0; x < image.getWidth()-1;x++){
+            Pixel[] temp = sorter(y, image);
+            for(int x = 0; x< image.getWidth();x++){
+                clone.setPixel(x, y, temp[x]);
+            }
+        }return clone;
+    }
                 
-                if(getAverageColour(image.getPixel(x, y))>getAverageColour(image.getPixel(x+1, y))){
+                
+
+    public static Pixel[] sorter(int y, APImage image){   
+        Pixel[] array;
+        boolean swapped;
+        array = new Pixel[image.getWidth()];
+        for (int j = 0; j<array.length;j++){
+            array[j]=image.getPixel(j, y);
+        }
+        for (int x = 0; x < array.length-1;x++){
+            swapped = false;
+            for(int i = 0; i < array.length-1-x;i++){
+                if(getAverageColour(array[i])>getAverageColour(array[i+1])){
                     Pixel temp;
-                    temp = image.getPixel(x+1, y);
-                    clone.setPixel(x+1, y,image.getPixel(x, y) );
-                    clone.setPixel(x,y,temp);
-                    swapped = true;
-                    
+                    temp = array[i];
+                    array[i]=array[i+1];
+                    array[i+1]=temp;
+                    swapped = true;                    
                     
                 
                 }
-            }if (swapped == false){
+            }if (!swapped){
                 break;
             }
-
-
-        }return clone;
-
-
+        }return array;
     }
+
     public static void drawer(APImage image){
         image.draw();
     }
