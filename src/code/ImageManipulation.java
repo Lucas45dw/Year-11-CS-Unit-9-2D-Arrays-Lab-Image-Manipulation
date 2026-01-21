@@ -186,6 +186,12 @@ public class ImageManipulation {
             for(int x = 0; x< image.getWidth();x++){
                 clone.setPixel(x, y, temp[x]);
             }
+        }
+        for (int xi=0; xi<clone.getWidth();xi++){
+            Pixel[] temp2 = sorter2(xi, clone);
+            for(int yi = 0; yi< clone.getHeight();yi++){
+                clone.setPixel(xi,yi,temp2[yi]);
+            }
         }return clone;
     }
                 
@@ -219,4 +225,29 @@ public class ImageManipulation {
     public static void drawer(APImage image){
         image.draw();
     }
+        public static Pixel[] sorter2(int x, APImage image){   
+        Pixel[] array;
+        boolean swapped;
+        array = new Pixel[image.getHeight()];
+        for (int j = 0; j<array.length;j++){
+            array[j]=image.getPixel(x, j);
+        }
+        for (int y = 0; y < array.length-1;y++){
+            swapped = false;
+            for(int i = 0; i < array.length-1-y;i++){
+                if(getAverageColour(array[i])>getAverageColour(array[i+1])){
+                    Pixel temp;
+                    temp = array[i];
+                    array[i]=array[i+1];
+                    array[i+1]=temp;
+                    swapped = true;                    
+                    
+                
+                }
+            }if (!swapped){
+                break;
+            }
+        }return array;
+    }
+
 }
