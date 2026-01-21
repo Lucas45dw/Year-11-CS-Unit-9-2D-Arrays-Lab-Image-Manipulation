@@ -1,6 +1,8 @@
 package code;
 
+import image.APImage;
 import image.Pixel;
+import java.util.Random;
 
 public class ImageManipulation {
 
@@ -8,7 +10,16 @@ public class ImageManipulation {
      *  Write a statement that will display the image in a window
      */
     public static void main(String[] args) {
-
+        String pathToFile = "cyberpunk2077.jpg";
+        APImage image = new APImage(pathToFile);
+        image.draw();
+        grayScale(pathToFile);
+        blackAndWhite(pathToFile);
+        reflectImage(pathToFile);
+        rotateImage(pathToFile);
+        edgeDetection(pathToFile, 20);
+        drawer(scrambleImage(pathToFile));
+        drawer(bubbleSort(pathToFile));
 
     }
 
@@ -21,6 +32,13 @@ public class ImageManipulation {
      * Calculate the average of the red, green, and blue components of the pixel.
      * Set the red, green, and blue components to this average value. */
     public static void grayScale(String pathOfFile) {
+        APImage image = new APImage(pathOfFile);
+        for(Pixel p : image){
+            int avg = getAverageColour(p);
+            p.setBlue(avg);
+            p.setGreen(avg);
+            p.setRed(avg);
+        }image.draw();
 
     }
 
@@ -30,7 +48,8 @@ public class ImageManipulation {
      * @return the average RGB value
      */
     private static int getAverageColour(Pixel pixel) {
-        return 0;
+
+        return (pixel.getRed() + pixel.getGreen() + pixel.getBlue()) / 3;
     }
 
     /** CHALLENGE TWO: Black and White
@@ -43,6 +62,20 @@ public class ImageManipulation {
      * If the average is less than 128, set the pixel to black
      * If the average is equal to or greater than 128, set the pixel to white */
     public static void blackAndWhite(String pathOfFile) {
+        APImage image = new APImage(pathOfFile);
+        for(Pixel p : image){
+            int avg = getAverageColour(p);
+            if(avg < 128){
+                p.setBlue(0);
+                p.setGreen(0);
+                p.setRed(0);
+            }else{
+                p.setBlue(255);
+                p.setGreen(255);
+                p.setRed(255);
+            }
+        }image.draw();
+
 
     }
 
@@ -69,6 +102,26 @@ public class ImageManipulation {
      * edge detection to an image using a threshold of 35
      *  */
     public static void edgeDetection(String pathToFile, int threshold) {
+        APImage image = new APImage(pathToFile);
+        APImage temp = image.clone();
+        for(int x = 1; x < image.getWidth(); x++){
+            for (int y = 1 ; y < image.getHeight()-1; y++){
+                Pixel p = temp.getPixel(x, y);
+                Pixel px = temp.getPixel(x+1, y);
+                Pixel py = temp.getPixel(x, y+1);
+                    if(Math.abs(getAverageColour(p)- getAverageColour(px)) > threshold 
+                        || Math.abs(getAverageColour(p)- getAverageColour(py))> threshold){
+                        p.setBlue(0);
+                        p.setGreen(0);
+                        p.setRed(0);
+                    }else{
+                        p.setBlue(255);
+                        p.setGreen(255);
+                        p.setRed(255);
+                    }
+
+            }
+        }temp.draw();
 
     }
 
@@ -79,6 +132,17 @@ public class ImageManipulation {
      *
      */
     public static void reflectImage(String pathToFile) {
+        APImage image = new APImage(pathToFile);
+        APImage temp = image.clone();
+        for(int x = 0; x < image.getWidth()/2; x++){
+            for (int y = 0 ; y < image.getHeight(); y++){
+                Pixel left = image.getPixel(x, y);
+                Pixel right = image.getPixel(image.getWidth()-1-x, y);
+                temp.setPixel(x,y, right);
+                temp.setPixel(image.getWidth()-1-x, y, left);
+
+            }
+        }temp.draw();
 
     }
 
@@ -89,7 +153,59 @@ public class ImageManipulation {
      *
      *  */
     public static void rotateImage(String pathToFile) {
+        APImage image = new APImage(pathToFile);
+        APImage temp = new APImage(image.getHeight(),image.getWidth());
+        for(int x = 0; x < image.getWidth(); x++){
+            for (int y = 0 ; y < image.getHeight(); y++){
+                Pixel p = image.getPixel(x, y);
+                temp.setPixel(temp.getWidth()-1-y,temp.getHeight()-1-x , p);
+
+            }
+        }temp.draw();
+
 
     }
+    public static APImage scrambleImage(String pathToFile){
+        APImage image = new APImage(pathToFile);
+        APImage temp =image.clone();
+        Random rand = new Random();
+        for(int x = 0; x < image.getWidth()-1;x++){
+            for(int y = 0; y < image.getHeight()-1;y++){
+                int j = rand.nextInt(image.getWidth());
+                int i = rand.nextInt(image.getHeight());
+                temp.setPixel(x,y,image.getPixel(j, i));
+                temp.setPixel(j,i,image.getPixel(x,y));
+            }
+        }return temp;
+    }
+    public static APImage bubbleSort(String pathToFile){
+        APImage image = new APImage(pathToFile);
+        APImage clone = image.clone();
+        boolean swapped;
+        for (int y = 0; y < image.getHeight();y++){
+            swapped = false;
+            for (int x = 0; x < image.getWidth()-1;x++){
+                
+                if(getAverageColour(image.getPixel(x, y))>getAverageColour(image.getPixel(x+1, y))){
+                    Pixel temp;
+                    temp = image.getPixel(x+1, y);
+                    clone.setPixel(x+1, y,image.getPixel(x, y) );
+                    clone.setPixel(x,y,temp);
+                    swapped = true;
+                    
+                    
+                
+                }
+            }if (swapped == false){
+                break;
+            }
 
+
+        }return clone;
+
+
+    }
+    public static void drawer(APImage image){
+        image.draw();
+    }
 }
